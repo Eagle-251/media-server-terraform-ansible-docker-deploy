@@ -1,0 +1,10 @@
+user_gid: 1001
+user_uid: 1001
+
+host_command_docker: docker
+host_command_sh: "/usr/bin/env sh"
+systemd_unit_home_path: "/root"
+
+
+
+docker_network: mediaServer

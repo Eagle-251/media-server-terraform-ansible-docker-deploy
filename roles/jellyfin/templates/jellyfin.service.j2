@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: "True"
+[Unit]
+Description=Jellyfin
+After=docker.service
+Requires=docker.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Environment="HOME={{ systemd_unit_home_path }}"
+ExecStartPre=-{{ host_command_sh }} -c '{{ host_command_docker }} kill jellyfin 2>/dev/null || true'
+ExecStartPre=-{{ host_command_sh }} -c '{{ host_command_docker }} rm jellyfin 2>/dev/null || true'
+
+ExecStart={{ host_command_docker }} run --rm --name Jellyfin \
+			--log-driver=none \
+			--user={{ user_uid }}:{{ user_gid }} \
+			--cap-drop=ALL \
+			--read-only \
+			--network={{ docker_network }} \
+			--mount type=bind,src={{ jellyfin_config_dir_path }},dst=/etc/jellyfin,ro \
+			--mount type=bind,src={{ jellyfin_data_path }},dst=/data \
+			{{ jellyfin_docker_image }} \
+			serve
+
+ExecStop=-{{ host_command_sh }} -c '{{ host_command_docker }} kill jellyfin 2>/dev/null || true'
+ExecStop=-{{ host_command_sh }} -c '{{ host_command_docker }} rm jellyfin 2>/dev/null || true'
+Restart=always
+RestartSec=30
+SyslogIdentifier=jellyfin
+
+[Install]
+WantedBy=multi-user.target
