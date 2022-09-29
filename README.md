@@ -1,4 +1,4 @@
-# media-server-terraform-ansible-docker-deploy 
+# Jellyfin in Docker on Proxmox using Terraform and Ansible   
 
 This is a work in progress IaC project to automate the deployment of my home media server setup.
 
