@@ -1,0 +1,36 @@
+---
+- name: Ensure file paths exist
+  file:
+    path: "{{ docker_container_config_path }}/caddy"
+    state: directory
+    mode: 0750
+    owner: "{{ system_user }}"
+    group: "{{ system_user_group }}"
+
+- name: Ensure Dockerfile exists on host
+  template:
+    src: "{{ role_path }}/templates/Dockerfile.j2"
+    dest: "{{ docker_container_config_path }}/caddy"
+    mode: 0750
+    owner: "{{ system_user }}"
+    group: "{{ system_user_group }}"
+
+
+- name: Ensure Caddyfile exists on host
+  template:
+    src: "{{ role_path }}/templates/Caddyfile.j2"
+    dest: "{{ docker_container_config_path }}/caddy/Caddyfile"
+
+# - name: Ensure Caddy image is built
+#   docker_image:
+#     name: "{{ caddy_custom_image_name }}"
+#     build:
+#       dockerfile: Dockerfile
+#       path: "{{ docker_container_config_path }}/caddy/Dockerfile"
+#       pull: true
+#     source: build
+
+- name: Build caddy image
+  command: "docker build -t {{ caddy_custom_image_name }} {{ docker_container_config_path}}/caddy" 
+
+

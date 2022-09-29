@@ -1,0 +1,74 @@
+# Base Role
+docker_base_path: /opt/docker
+docker_container_config_path: "{{ docker_base_path }}/config"
+system_user: "{{ lookup('env', 'USER_LOGIN') }}"
+system_user_group: "{{ lookup('env', 'USER_LOGIN') }}"
+media_server_docker_network: "media_server"
+
+# Geerling Firewall
+
+firewall_allowed_tcp_ports:
+  - "22"
+  - "80"
+  - "8096"
+
+firewall_allowed_udp_ports:
+  - "1900"
+  - "7359"
+
+# Tailscale
+
+tailscale_authkey: "{{ lookup('env', 'TS_KEY') }}"
+
+# Servarr
+
+# Jellyfin
+
+
+jellyfin_container_name: "jellyfin"
+jellyfin_container_image: "jellyfin/jellyfin:latest"
+
+
+jellyfin_volume_name: "jellyfin_media_nfs"
+jellyfin_volume_driver_options:
+  type: "{{ jellyfin_volume_nfs_type }}" 
+  device: ":{{ jellyfin_volume_nfs_mount_point }}"
+  o: "{{ jellyfin_volume_nfs_mount_options }}" 
+
+jellyfin_volume_nfs_mount_point: "/mnt/data/media"
+jellyfin_volume_nfs_type: "nfs"
+jellyfin_volume_nfs_mount_options: "addr={{ jellyfin_volume_nfs_server_endpoint }},rw"
+jellyfin_volume_nfs_server_endpoint: "100.118.124.46"
+
+
+jellyfin_remote_config_backup_user: dietpi
+jellyfin_remote_config_backup_src: "~/nfs-test/container_config_backups/jellyfin/"
+  
+jellyfin_container_volume_mount_point: "/data"
+
+jellyfin_config_host_path: "{{ docker_container_config_path}}/{{ jellyfin_container_name }}/config" 
+jellyfin_config_container_path: "/config"
+
+
+jellyfin_volumes_full_paths:
+  - "{{ jellyfin_volume_name }}:/data"
+  - "{{ jellyfin_config_host_path }}:{{ jellyfin_config_container_path }}" 
+
+jellyfin_container_port_bindings:
+  - 8096:8096
+  - 1900:1900
+  - 7359:7359
+
+
+# Caddy
+
+caddy_dns_token: "{{ lookup('env', 'HETZNER_API_KEY') }}"
+caddy_vhosts:
+  - host: media.gilchrist.scot
+    endpoint: "{{ jellyfin_container_name }}:8096" 
+caddy_image_version: 2.6.1
+caddy_custom_image_name: caddy-hetzner
+caddy_container_name: caddy  
+caddy_published_ports:
+  - 80:80
+  - 443:443

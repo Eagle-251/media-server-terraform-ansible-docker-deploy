@@ -1,0 +1,11 @@
+#jinja2: lstrip_blocks: "True"
+FROM caddy:{{ caddy_image_version }}-builder AS builder
+
+RUN xcaddy build \
+  --with github.com/caddy-dns/hetzner
+
+FROM caddy:{{ caddy_image_version }}
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+COPY Caddyfile /etc/caddy/Caddyfile

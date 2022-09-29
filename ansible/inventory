@@ -1,0 +1,2 @@
+[mediaserver]
+debian_host ansible_host=media-server 

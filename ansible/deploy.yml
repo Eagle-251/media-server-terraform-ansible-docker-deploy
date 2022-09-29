@@ -1,0 +1,14 @@
+---
+- name: Media-server setup and installation
+  hosts: mediaserver
+  remote_user: "{{ lookup('env', 'USER_LOGIN') }}"
+  become: true
+  # ansible_become_password: "{{ lookup('env', 'USER_PASSWORD)}}"
+
+  roles:
+    - geerlingguy.security
+    - geerlingguy.firewall
+    - geerlingguy.docker
+    - base
+    - jellyfin
+    - caddy

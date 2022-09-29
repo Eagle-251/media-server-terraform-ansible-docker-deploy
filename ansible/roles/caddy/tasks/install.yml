@@ -1,0 +1,12 @@
+---
+
+- name: Ensure Caddy container is created and running
+  docker_container:
+    name: "{{ caddy_container_name }}"
+    image: "{{ caddy_custom_image_name }}"
+    published_ports: "{{ caddy_published_ports }}"
+    networks:
+      - name: "{{ media_server_docker_network }}"
+
+    restart_policy: always
+    state: started

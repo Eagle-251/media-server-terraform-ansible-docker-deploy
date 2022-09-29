@@ -1,0 +1,7 @@
+terraform/*.tfstate
+terraform/.envrc
+terraform/credentials.tfvars
+.bitwarden/
+ansible/.envrc
+terraform/.terraform/
+.terraform.lock.hcl
