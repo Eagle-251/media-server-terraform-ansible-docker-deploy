@@ -8,6 +8,10 @@ Currently, it allows you to interact with a [Proxmox](https://www.proxmox.com/en
 
 ## Roadmap
 
+This project's purpose is try to define my media server setup "end to end" using IaC tools, so as to learn more about them whilst still having fun! 
+
 - [ ] Tie together Terraform and Ansible so that Ansible populates it's inventory using something like [terraform-inventory](https://github.com/nbering/terraform-inventory/) which is a Ansible Dynamic Inventory plugin.
   - [ ] Configure Terraform to return VM ip from QEMU Cloud Agent using Terraform output.
 - [ ] Deploy a [Servarr](https://wiki.servarr.com/) stack in Docker passing the stacks network traffic through a Wireguard container. 
+- [ ] Add Packer stage to build custom QEMU Template
+  - [ ] Maybe move Docker installation to Cloud Init with Packer
