@@ -1,0 +1,10 @@
+---
+
+- name: Ensure config paths exist
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items: "{{ host_config_path_list }}"
+
+    
+    

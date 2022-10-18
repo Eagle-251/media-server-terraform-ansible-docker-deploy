@@ -1,0 +1,31 @@
+---
+
+ - import_tasks: base.yml 
+   tags:
+     - setup-all
+     - setup-servarr
+
+ - import_tasks: wireguard.yml
+   tags:
+     - setup-all
+     - setup-servarr
+
+ - import_tasks: transmission.yml
+   tags:
+     - setup-all
+     - setup-servarr
+
+ - import_tasks: prowlarr.yml
+   tags:
+     - setup-all
+     - setup-servarr
+
+ - import_tasks: radarr.yml
+   tags:
+     - setup-all
+     - setup-servarr
+
+ - import_tasks: sonarr.yml
+   tags:
+     - setup-all
+     - setup-servarr

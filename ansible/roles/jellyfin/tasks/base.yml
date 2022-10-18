@@ -1,9 +1,17 @@
 ---
 
-- name: Create Docker volume for Media
-  docker_volume:
-    name: "{{ jellyfin_volume_name }}"
-    driver_options: "{{ jellyfin_volume_driver_options }}"
+- name: Mount up device by UUID
+  mount:
+    path: "{{ media_host_mount_point }}" 
+    src: UUID="{{ media_disk_uuid }}"
+    fstype: ext4 
+    opts: noatime
+    state: mounted
+
+# - name: Create Docker NFS volume for Media
+#   docker_volume:
+#     name: "{{ jellyfin_volume_name }}"
+#     driver_options: "{{ jellyfin_volume_driver_options }}"
 
 - name: Ensure Jellyfin host config path exists
   file:

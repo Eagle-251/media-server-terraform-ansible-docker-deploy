@@ -1,0 +1,29 @@
+---
+- name: Template wireguard conf file 
+  template:
+    src: "{{ role_path }}/templates/wireguard/config/wg0.conf.j2"
+    dest: "{{ wireguard_config_host_path }}/wg0.conf"
+
+- name: Ensure wireguard container is created and up
+  docker_container:
+    name: "{{ wireguard_container_name }}" 
+    image: "{{ wireguard_container_image }}"
+    volumes: "{{ wireguard_volumes_full_paths }}"
+    networks:
+      - name: "{{ media_server_docker_network }}"
+    capabilities: "{{ wireguard_container_capabilites }}"
+    sysctls: "{{ wireguard_container_sysctls }}"
+    published_ports: "{{ wireguard_published_ports }}" 
+    restart_policy: always
+
+# - name: Check wireguard is up
+#   block:
+#     - name: Query Mullvad api
+#       docker_container_exec:
+#         container: "{{ wireguard_container_name }}"
+#         command: "curl https://am.i.mullvad.net/json"
+#       register: mullvad_check_result
+#     - name: Check for existance of Mullvad server hostname in response 
+#       debug:
+#         var: mullvad_check_result.stderr_lines
+#       failed_when: mullvad_check_result.stderr_lines | json_query('.mullvad_exit_ip_hostname') == "" 

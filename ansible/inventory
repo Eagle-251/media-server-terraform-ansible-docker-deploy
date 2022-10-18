@@ -1,2 +1,2 @@
 [mediaserver]
-debian_host ansible_host=media-server 
+debian_host ansible_host=media-server become=true become_user=root ansible_become_pass="{{ sudo_password }}"

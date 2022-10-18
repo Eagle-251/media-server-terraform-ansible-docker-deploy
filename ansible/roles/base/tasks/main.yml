@@ -1,15 +1,6 @@
+
 ---
-  - name: Install Pip.
-    apt: name=python3-pip state=present
+ - import_tasks: setup.yml 
+   tags:
+     - always
 
-  - name: Install Docker Python library.
-    pip: name=docker state=present
-
-  - name: Ensure Base docker path exists
-    file:
-      path: "{{ docker_base_path }}"
-      state: directory 
-
-  - name: Ensure docker network is created
-    docker_network:
-      name: "{{ media_server_docker_network }}"

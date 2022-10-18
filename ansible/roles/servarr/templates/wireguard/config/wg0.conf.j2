@@ -1,0 +1,15 @@
+[Interface]
+PrivateKey = {{ wireguard_private_key }} 
+Address = {{ wireguard_interface_address }} 
+DNS = {{ wireguard_dns }}
+
+#PostUp = DROUTE={{ host_default_route }}; HOMENET2=10.0.0.0/8; HOMENET3=172.16.0.0/12; ip route add $HOMENET3 via $DROUTE;ip route add $HOMENET2 via $DROUTE; iptables -A OUTPUT -d $HOMENET2 -j ACCEPT; iptables -A OUTPUT -d $HOMENET3 -j ACCEPT;  iptables -A OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
+
+#PreDown = HOMENET2=10.0.0.0/8; HOMENET3=172.16.0.0/12; iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT; iptables -D OUTPUT -s $HOMENET2 -j ACCEPT; iptables -D OUTPUT -s $HOMENET3 -j ACCEPT
+
+
+
+[Peer]
+PublicKey = wkEqQQKK3dJDttRanJWONU/5xuxRDR4cLfvnPJKtijE=
+AllowedIPs = 0.0.0.0/0,::0/0
+Endpoint = {{ wireguard_peer_endpoint }} 

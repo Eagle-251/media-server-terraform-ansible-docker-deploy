@@ -1,3 +1,11 @@
 ---
  - import_tasks: base.yml 
+   tags:
+     - setup-all
+     - setup-jellyfin
+     - setup-base
+
  - import_tasks: install.yml
+   tags:
+     - setup-all
+     - setup-jellyfin

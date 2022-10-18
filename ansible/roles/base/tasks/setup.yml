@@ -1,0 +1,42 @@
+---
+  - name: Get ip of main network interface
+    shell: hostname -I | cut -d " " -f 1
+    args:
+      warn: no
+    register: local_ip
+
+  - name: Set result of shell command to variable
+    set_fact:
+      host_local_ip: "{{ local_ip.stdout }}"
+
+  - name: Get default route
+    shell: ip route | grep default | cut -d " " -f 3 
+    args:
+      warn: no
+    register: droute
+
+  - name: Set result to variable
+    set_fact:
+      host_default_route: "{{ droute.stdout }}"
+  
+  - name: Print default route
+    debug:
+      var: host_default_route
+
+  - name: Install Pip.
+    apt: name=python3-pip state=present
+
+  - name: Install Docker Python library.
+    pip: name=docker state=present
+
+  - name: Ensure Base docker path exists
+    file:
+      path: "{{ docker_base_path }}"
+      state: directory 
+
+  - name: Ensure docker networks are created
+    docker_network:
+      name: "{{ item }}"
+    with_items:
+      - "{{ media_server_docker_network }}"
+      - "{{ servarr_docker_network }}"

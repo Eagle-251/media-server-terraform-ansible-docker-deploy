@@ -1,0 +1,15 @@
+---
+
+- name: Ensure radarr container is created and running
+  docker_container:
+    name: "{{ radarr_container_name }}"
+    image: "{{ radarr_container_image }}"
+    env:
+      PGID: "{{ container_user | string }}"
+      PUID: "{{ container_user | string }}"
+      TZ: "{{ container_tz }}"
+    volumes: "{{ radarr_volumes_full_paths }}"
+    network_mode: "{{ servarr_containers_network_mode }}"
+    restart_policy: always
+
+

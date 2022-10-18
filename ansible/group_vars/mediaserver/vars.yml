@@ -3,7 +3,9 @@ docker_base_path: /opt/docker
 docker_container_config_path: "{{ docker_base_path }}/config"
 system_user: "{{ lookup('env', 'USER_LOGIN') }}"
 system_user_group: "{{ lookup('env', 'USER_LOGIN') }}"
+container_user: 1001
 media_server_docker_network: "media_server"
+servarr_docker_network: "servarr"
 
 # Geerling Firewall
 
@@ -11,16 +13,107 @@ firewall_allowed_tcp_ports:
   - "22"
   - "80"
   - "8096"
+  - "58215"
 
 firewall_allowed_udp_ports:
   - "1900"
   - "7359"
-
-# Tailscale
-
-tailscale_authkey: "{{ lookup('env', 'TS_KEY') }}"
+  - "58215"
 
 # Servarr
+
+container_tz: "Europe/Brussels"
+
+host_config_path_list:
+   - "{{ wireguard_config_host_path }}"
+   - "{{ prowlarr_config_host_path }}"
+   - "{{ radarr_config_host_path }}"
+   - "{{ sonarr_config_host_path }}"
+   - "{{ lidarr_config_host_path }}"
+
+servarr_containers_network_mode: "container:{{ wireguard_container_name }}"
+
+## Wireguard
+
+wireguard_volumes_full_paths:
+  - "{{ wireguard_config_host_path }}:{{ wireguard_config_container_path }}" 
+  - "/lib/modules:/lib/modules"
+wireguard_container_image: "linuxserver/wireguard"
+wireguard_container_name: "wireguard"
+wireguard_config_host_path: "{{ docker_container_config_path}}/{{ wireguard_container_name }}/config" 
+wireguard_config_container_path: "/config"
+
+wireguard_container_capabilites:
+  - "NET_ADMIN"
+  - "SYS_MODULE" 
+
+wireguard_container_sysctls:
+  net.ipv4.conf.all.src_valid_mark: 1
+  net.ipv6.conf.all.disable_ipv6: 0
+  net.ipv6.conf.default.disable_ipv6: 0
+  net.ipv6.conf.lo.disable_ipv6: 0
+
+wireguard_published_ports:
+  - 51820:51820
+  - 58215:58215
+  - 9091:9091 #Transmission
+  - 9696:9696 #Prowlarr 
+  - 8989:8989 #Sonarr
+  - 7878:7878 #Radarr
+
+## Prowlarr
+
+prowlarr_volumes_full_paths:
+  - "{{ media_host_mount_point }}:/data"
+  - "{{ prowlarr_config_host_path }}:{{ prowlarr_config_container_path }}" 
+prowlarr_container_image: "lscr.io/linuxserver/prowlarr:{{ prowlarr_container_image_version }}"
+prowlarr_container_image_version: "develop" 
+prowlarr_container_name: "prowlarr"
+prowlarr_config_host_path: "{{ docker_container_config_path}}/{{ prowlarr_container_name }}/config" 
+prowlarr_config_container_path: "/config"
+
+## Lidarr
+lidarr_volumes_full_paths:
+  - "{{ media_host_mount_point }}:/data"
+  - "{{ lidarr_config_host_path }}:{{ lidarr_config_container_path }}" 
+lidarr_container_image: "lscr.io/linuxserver/lidarr"
+lidarr_container_name: "lidarr"
+lidarr_config_host_path: "{{ docker_container_config_path}}/{{ lidarr_container_name }}/config" 
+lidarr_config_container_path: "/config"
+
+
+## Sonarr
+sonarr_volumes_full_paths:
+  - "{{ media_host_mount_point }}/media/torrents:/data/downloads"
+  - "{{ media_host_mount_point }}/media/tv:/data/tv"
+  - "{{ sonarr_config_host_path }}:{{ sonarr_config_container_path }}" 
+sonarr_container_image: "lscr.io/linuxserver/sonarr"
+sonarr_container_name: "sonarr"
+sonarr_config_host_path: "{{ docker_container_config_path}}/{{ sonarr_container_name }}/config" 
+sonarr_config_container_path: "/config"
+
+
+## Radarr
+radarr_volumes_full_paths:
+  - "{{ media_host_mount_point }}/media/torrents:/data/downloads"
+  - "{{ media_host_mount_point }}/media/movies:/data/movies"
+  - "{{ radarr_config_host_path }}:{{ radarr_config_container_path }}" 
+radarr_container_image: "lscr.io/linuxserver/radarr"
+radarr_container_name: "radarr"
+radarr_config_host_path: "{{ docker_container_config_path}}/{{ radarr_container_name }}/config" 
+radarr_config_container_path: "/config"
+
+
+## Transmission
+
+transmission_volumes_full_paths:
+  - "{{ media_host_mount_point }}/media/torrents:/data/downloads"
+  - "{{ transmission_config_host_path }}:{{ transmission_config_container_path }}" 
+transmission_container_image: "lscr.io/linuxserver/transmission"
+transmission_container_name: "transmission"
+transmission_config_host_path: "{{ docker_container_config_path}}/{{ transmission_container_name }}/config" 
+transmission_config_container_path: "/config"
+
 
 # Jellyfin
 
@@ -29,20 +122,21 @@ jellyfin_container_name: "jellyfin"
 jellyfin_container_image: "jellyfin/jellyfin:latest"
 
 
-jellyfin_volume_name: "jellyfin_media_nfs"
-jellyfin_volume_driver_options:
-  type: "{{ jellyfin_volume_nfs_type }}" 
-  device: ":{{ jellyfin_volume_nfs_mount_point }}"
-  o: "{{ jellyfin_volume_nfs_mount_options }}" 
+media_host_mount_point: "/mnt/data"
+media_disk_uuid: "8d51d1b5-a5d4-428b-86cc-8a9f75de70eb"
+# media_volume_driver_options:
+#   type: "{{ media_volume_nfs_type }}" 
+#   device: ":{{ media_volume_nfs_mount_point }}"
+#   o: "{{ media_volume_nfs_mount_options }}" 
 
-jellyfin_volume_nfs_mount_point: "/mnt/data/media"
-jellyfin_volume_nfs_type: "nfs"
-jellyfin_volume_nfs_mount_options: "addr={{ jellyfin_volume_nfs_server_endpoint }},rw"
-jellyfin_volume_nfs_server_endpoint: "100.118.124.46"
+# media_volume_nfs_mount_point: "/mnt/data/media"
+# media_volume_nfs_type: "nfs"
+# media_volume_nfs_mount_options: "addr={{ media_volume_nfs_server_endpoint }},rw"
+# media_volume_nfs_server_endpoint: "100.118.124.46"
 
 
-jellyfin_remote_config_backup_user: dietpi
-jellyfin_remote_config_backup_src: "~/nfs-test/container_config_backups/jellyfin/"
+# jellyfin_remote_config_backup_user: dietpi
+# jellyfin_remote_config_backup_src: "~/nfs-test/container_config_backups/jellyfin/"
   
 jellyfin_container_volume_mount_point: "/data"
 
@@ -51,7 +145,7 @@ jellyfin_config_container_path: "/config"
 
 
 jellyfin_volumes_full_paths:
-  - "{{ jellyfin_volume_name }}:/data"
+  - "{{ media_host_mount_point }}/media:/data"
   - "{{ jellyfin_config_host_path }}:{{ jellyfin_config_container_path }}" 
 
 jellyfin_container_port_bindings:
@@ -66,6 +160,14 @@ caddy_dns_token: "{{ lookup('env', 'HETZNER_API_KEY') }}"
 caddy_vhosts:
   - host: media.gilchrist.scot
     endpoint: "{{ jellyfin_container_name }}:8096" 
+  - host: sonarr.gilchrist.scot
+    endpoint: "{{ wireguard_container_name }}:8989" 
+  - host: radarr.gilchrist.scot
+    endpoint: "{{ wireguard_container_name }}:7878" 
+  - host: transmission.gilchrist.scot
+    endpoint: "{{ wireguard_container_name }}:9091" 
+  - host: prowlarr.gilchrist.scot
+    endpoint: "{{ wireguard_container_name }}:9696" 
 caddy_image_version: 2.6.1
 caddy_custom_image_name: caddy-hetzner
 caddy_container_name: caddy  

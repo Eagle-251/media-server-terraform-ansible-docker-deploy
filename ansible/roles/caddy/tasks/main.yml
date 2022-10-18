@@ -1,3 +1,9 @@
 ---
  - import_tasks: build.yml 
+   tags:
+     - setup-all
+     - setup-caddy
  - import_tasks: install.yml
+   tags:
+     - setup-all
+     - setup-caddy

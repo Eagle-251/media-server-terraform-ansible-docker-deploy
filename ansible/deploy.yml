@@ -11,4 +11,5 @@
     - geerlingguy.docker
     - base
     - jellyfin
+    - servarr
     - caddy

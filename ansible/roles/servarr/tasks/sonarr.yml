@@ -1,0 +1,14 @@
+---
+
+- name: Ensure sonarr container is created and running
+  docker_container:
+    name: "{{ sonarr_container_name }}"
+    image: "{{ sonarr_container_image }}"
+    env:
+      PGID: "{{ container_user | string }}"
+      PUID: "{{ container_user | string }}"
+      TZ: "{{ container_tz }}"
+    volumes: "{{ sonarr_volumes_full_paths }}"
+    network_mode: "{{ servarr_containers_network_mode }}"
+    restart_policy: always
+

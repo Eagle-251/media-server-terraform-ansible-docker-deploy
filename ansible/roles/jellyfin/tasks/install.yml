@@ -3,6 +3,7 @@
   docker_container:
     name: "{{ jellyfin_container_name }}"
     image: "{{ jellyfin_container_image }}"
+    user: "{{ container_user }}:{{ container_user }}"
     volumes: "{{ jellyfin_volumes_full_paths }}" 
     # network_mode: host
     published_ports: "{{ jellyfin_container_port_bindings }}"

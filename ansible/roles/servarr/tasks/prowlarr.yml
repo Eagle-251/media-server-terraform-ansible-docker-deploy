@@ -1,0 +1,14 @@
+---
+
+- name: Ensure prowlarr container is created and running
+  docker_container:
+    name: "{{ prowlarr_container_name }}"
+    image: "{{ prowlarr_container_image }}"
+    env:
+      PGID: "{{ container_user | string }}"
+      PUID: "{{ container_user | string }}"
+      TZ: "{{ container_tz }}"
+    volumes: "{{ prowlarr_volumes_full_paths }}"
+    network_mode: "{{ servarr_containers_network_mode }}"
+    restart_policy: always
+
