@@ -3,9 +3,16 @@
    tags:
      - setup-all
      - setup-jellyfin
+     - setup-jellyseerr
      - setup-base
 
  - import_tasks: install.yml
    tags:
      - setup-all
      - setup-jellyfin
+
+ - import_tasks: jellyseer.yml
+   tags:
+     - setup-all
+     - setup-jellyfin
+     - setup-jellyseerr

@@ -31,6 +31,7 @@ host_config_path_list:
    - "{{ sonarr_config_host_path }}"
    - "{{ lidarr_config_host_path }}"
 
+
 servarr_containers_network_mode: "container:{{ wireguard_container_name }}"
 
 ## Wireguard
@@ -154,6 +155,15 @@ jellyfin_container_port_bindings:
   - 7359:7359
 
 
+# jellyseerr
+
+jellyseerr_container_name: "jellyseerr"
+jellyseerr_container_image: "fallenbagel/jellyseerr:latest"
+jellyseerr_config_host_path: "{{ docker_container_config_path}}/{{ jellyseerr_container_name }}/config" 
+jellyseerr_config_container_path: "/app/config"
+jellyseerr_volumes_full_paths:
+  - "{{ jellyseerr_config_host_path }}:{{ jellyseerr_config_container_path }}" 
+
 # Caddy
 
 caddy_dns_token: "{{ lookup('env', 'HETZNER_API_KEY') }}"
@@ -168,6 +178,9 @@ caddy_vhosts:
     endpoint: "{{ wireguard_container_name }}:9091" 
   - host: prowlarr.gilchrist.scot
     endpoint: "{{ wireguard_container_name }}:9696" 
+  - host: requests.gilchrist.scot
+    endpoint: "{{ jellyseerr_container_name }}:5055"
+
 caddy_image_version: 2.6.1
 caddy_custom_image_name: caddy-hetzner
 caddy_container_name: caddy  

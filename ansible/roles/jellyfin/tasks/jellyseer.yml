@@ -1,0 +1,12 @@
+---
+
+- name: Ensure Jellyseerr container is created and running
+  docker_container:
+    name: "{{ jellyseerr_container_name }}"
+    image: "{{ jellyseerr_container_image }}"
+    # user: "{{ container_user }}:{{ container_user }}"
+    volumes: "{{ jellyseerr_volumes_full_paths }}" 
+    networks:
+      - name: "{{ media_server_docker_network }}"
+    restart_policy: always
+    state: started 

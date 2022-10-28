@@ -17,6 +17,18 @@
   file:
     path: "{{ jellyfin_config_host_path }}"
     state: directory 
+    recurse: yes
+    owner: "{{ container_user }}"
+    group: "{{ container_user }}"
+
+
+- name: Ensure jellyseerr host config path exists
+  file:
+    path: "{{ jellyseerr_config_host_path }}"
+    state: directory 
+    # recurse: yes
+    # owner: "{{ container_user }}"
+    # group: "{{ container_user }}"
 
 # - name: Ensure Jellyfin config files are synchronised
 #   copy:
